@@ -1,15 +1,15 @@
 let i=0
-const product =JSON.parse(localStorage.getItem('product'))
+let product =JSON.parse(localStorage.getItem('product'))
 const cartItem = document.getElementById('cart__items')
 console.log(product)
-
+let s =product.lenght
 
 
 
 // console.log(cartItem)
-while(i<product.lenght){}
+while(i<s){
       cartItem.innerHTML += `
-        <article class="cart__item" data-id="${product[i].id}" data-color="${product[i.color]}">
+        <article class="cart__item" data-id="${product[i].id}" data-color="${product[i].color}">
         <div class="cart__item__img">
           <img src="${product[i].img}" alt="Photographie d'un canapé">
         </div>
@@ -31,4 +31,7 @@ while(i<product.lenght){}
         </div>
       </article>
         `
-i +=1
+  i +=1
+  console.log('test')
+  
+}

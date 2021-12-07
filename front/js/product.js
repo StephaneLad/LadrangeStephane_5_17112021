@@ -45,7 +45,16 @@ addCart.addEventListener('click', () =>{
     if (product === null){
         product = [{id:id,color:color,quantity:quantity,nameItem:names,price:priceItem,img:imgItem}]
     }else{
-        product= [...product,{id:id,color:color,quantity:quantity,nameItem:names,price:priceItem,img:imgItem}]
+        while(i<product.length){
+            if(id===product[i].id & color===product[i].color){
+              parseInt(product[i].quantity) += parseInt(quantity)
+            }else{
+                if(i===product.length){
+                    product= [...product,{id:id,color:color,quantity:quantity,nameItem:names,price:priceItem,img:imgItem}]
+                }
+            }
+            i+=1
+        }
         
     }
     product = JSON.stringify(product)
