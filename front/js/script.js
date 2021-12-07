@@ -1,10 +1,10 @@
-const item = document.getElementById("items");
+const item = document.getElementById("items")
 
 fetch('http://localhost:3000/api/products')
     .then(res=>res.json())
     .then(data=>{
         const lenght = data.length
-        let i = 0;
+        let i = 0
         while (i < lenght){
             let element = data[i]
             item.innerHTML += `
