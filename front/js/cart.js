@@ -9,7 +9,9 @@ let quantityShow
 
 let form =document.querySelector('.cart__order__form').getElementsByTagName('input')
 let error =document.querySelector('.cart__order__form').getElementsByTagName('p')
-
+let contact
+let data1
+let data2
 // let firstName = document.getElementById('firstName')
 // let firstNameError = document.getElementById('firstNameErrorMsg')
 // let lastName = document.getElementById('lastName')
@@ -75,11 +77,35 @@ for (let y = 0; y < quantity.length; y++) {
 
 
 for (let y = 0; y < form.length; y++) {
-  if(!form[y].value){
-    error[y].innerHTML=`veuillez renseignez votre ${form[y].name}`
-  }else{
-    console.log(y)
-  }
-  
+  let firstName
+  let lastName
+  let adress
+  let city
+  let email
+  form[y].addEventListener('change',()=>{
+    if(!form[y].value){
+      error[y].innerHTML=`veuillez renseignez votre ${form[y].name}`
+    }else{
+      if(y===0){
+        firstName={firstName:JSON.stringify(form[y].value)}
+      }
+      if(y===1){
+        lastName={lastName:JSON.stringify(form[y].value)}
+      }
+      if(y===2){
+        adress=form[y].value
+      }
+      if(y===3){
+        city=form[y].value
+      }
+      if(y===4){
+        email=form[y].value
+      }
+    }
+    form[5].addEventListener('click',()=>{
+      contact=[{...firstName,...lastName,...adress}]
+      console.log(contact)
+    })
+  })
   
 }
