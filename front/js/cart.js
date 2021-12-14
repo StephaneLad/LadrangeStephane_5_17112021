@@ -78,61 +78,35 @@ for (let y = 0; y < quantity.length; y++) {
   
 }
 
-
+console.log(form.length)
 for (let y = 0; y < form.length; y++) {
-  let firstName
-  let lastName
-  let adress
-  let city
-  let email
   form[y].addEventListener('change',()=>{
-    if(!form[y].value){
+    error[y].innerHTML=``
+    if(form[y].value.length <2){
       error[y].innerHTML=`veuillez renseignez votre ${form[y].name}`
-    }else{
-      // if(y===0){
-      //   firstName={firstName:JSON.stringify(form[y].value)}
-      // }
-      // if(y===1){
-      //   lastName={lastName:JSON.stringify(form[y].value)}
-      // }
-      // if(y===2){
-      //   adress=form[y].value
-      // }
-      // if(y===3){
-      //   city=form[y].value
-      // }
-      // if(y===4){
-      //   email=form[y].value
-      // }
-      // form[5].addEventListener('click',()=>{
-      //   contact={firstName:form[0].value,lastName:form[1].value,adress:form[2].value,city:form[3].value,email:form[4].value}
-      //   console.log(contact)
-      // })
-      contact={firstName:form[0].value,lastName:form[1].value,adress:form[2].value,city:form[3].value,email:form[4].value}
-      formTrue=true
     }
-    
+    contact={firstName:form[0].value,lastName:form[1].value,adress:form[2].value,city:form[3].value,email:form[4].value}
   })
   
 }
+
 form[5].addEventListener('click',()=>{
+  
   if (formTrue){
-    datas={product,contact}
-    fetch("http://localhost:3000/",{
+    datas={product:product,contact:contact}
+    fetch("http://localhost:3000/api/product/order",{
       method: "POST",
       body: JSON.stringify(datas),
       Headers:{
-        "Content-Type": "ap^mication/json"
+        "Content-Type": "application/json"
       }
     })
+    .then(res=>res.json())
+    .then(data=>{
+    console.log(data)
+})
   }else{
     console.log('t')
   }
   
-})
-
-fetch("http://localhost:3000/")
-.then(res=>res.json())
-.then(data=>{
-  console.log(data)
 })
