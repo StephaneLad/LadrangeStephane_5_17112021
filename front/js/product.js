@@ -12,6 +12,7 @@ const colorChoice = document.getElementById('colors')
 const addCart = document.getElementById('addToCart')
 console.log(addCart)
 
+// fonction asynchrone pour recuper les donné du produit souhaiter et afficher le HTML en conséquance
 async function productItem (){
     await fetch (`http://localhost:3000/api/products/${id}`)
     .then(res=>res.json())
@@ -33,32 +34,65 @@ async function productItem (){
     })
 ;
 }
-productItem().then(_ => console.log(names) )
 
+// eventlistener sur le bouton dajout permetant de recuper la couleur et la quantité souhaiter 
 addCart.addEventListener('click', () =>{   
     let quantity = parseInt(document.getElementById('quantity').value)
     let color = document.getElementById('colors').value
     let product =JSON.parse(localStorage.getItem('product'))
     let i =0
+    let y =0
     let newProduct = false
+    let currentProduct = false
+    // probleme if else === fait
+    let itemOk = false
+
     if (product === null){
         product = [{id:id,color:color,quantity:quantity,nameItem:names,price:priceItem,img:imgItem}]
     }else{
+        console.log(product)
+
+        // 
         while(i<product.length){
-            if(id===product[i].id & color===product[i].color){
-              product[i].quantity += quantity
-              newProduct = true
+            if(id===product[i].id){
+                if(color===product[i].color){
+                    product[i].quantity += quantity
+                    newProduct = true
+                    itemOk= true
+                    console.log('if')
+                }else{
+                    if(!itemOk){
+                        console.log('else')
+                        currentProduct = true
+                        y = i
+                    }
+                }
             }
+            // if(id===product[i].id & color===product[i].color){
+            //   product[i].quantity += quantity
+            //   newProduct = true
+            // }
             i+=1
         }
-        if(i===product.length & !newProduct){
-            product= [...product,{id:id,color:color,quantity:quantity,nameItem:names,price:priceItem,img:imgItem}]
-            console.log('test')
+        if(i===product.length){
+            if(currentProduct & newProduct===false){
+                console.log(currentProduct)
+                product.splice(y,0,{id:id,color:color,quantity:quantity,nameItem:names,price:priceItem,img:imgItem})
+                currentProduct = false
+                console.log(currentProduct)
+            }else{
+                if(!newProduct){
+                    console.log('tehe')
+                    product= [...product,{id:id,color:color,quantity:quantity,nameItem:names,price:priceItem,img:imgItem}]
+                }
+            }
+            // product= [...product,{id:id,color:color,quantity:quantity,nameItem:names,price:priceItem,img:imgItem}]
+            // console.log('test')
         }
     }
     product = JSON.stringify(product)
     localStorage.setItem('product',product)
-    console.log(product)
+    // console.log(product)
 
 
 

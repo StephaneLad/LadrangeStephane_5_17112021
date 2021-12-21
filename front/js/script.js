@@ -1,5 +1,6 @@
 const item = document.getElementById("items")
 
+// fetch de l'api products pour recuper chaque produit et intégrer leur donné dans le HTML
 fetch('http://localhost:3000/api/products')
     .then(res=>res.json())
     .then(data=>{
