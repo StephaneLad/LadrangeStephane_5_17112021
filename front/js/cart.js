@@ -8,6 +8,10 @@ let test = document.getElementById('order')
 let deleteItem
 let quantity
 let quantityShow
+let quantityModifier
+let totalPriceItem = 0
+let priceItem
+const totalPrice = document.getElementById('totalPrice')
 
 let form =document.querySelector('.cart__order__form').getElementsByTagName('input')
 let error =document.querySelector('.cart__order__form').getElementsByTagName('p')
@@ -19,6 +23,9 @@ let datas
 
 let productId =[]
 let id
+let orderId = localStorage.getItem('orderId')
+let confirmation = document.querySelector('#orderId')
+
 
 
 
@@ -61,15 +68,27 @@ while(i<product.length){
         </div>
       </article>
         `
+
+  // recuperation de l'id produit
   id=product[i].id
   productId=[...productId,id]
+
+  // genération du prix total
+  priceItem=product[i].quantity*product[i].price
+  totalPriceItem+=priceItem
+  console.log(totalPriceItem)
+
   i +=1
 
+  // recuperation des diver element html
   deleteItem = document.querySelectorAll('.cart__item__content__settings__delete')
   quantity = document.querySelectorAll('.itemQuantity')
   quantityShow = document.querySelectorAll('.cart__item__content__settings__quantity_show')
 }
 test.addEventListener('click',()=>{console.log('test')})
+totalPrice.innerHTML=`${totalPriceItem}`
+
+
 
 // eventlistener pour suprimer le produit souhaiter
 for (let y = 0; y < deleteItem.length; y++) {
@@ -83,39 +102,66 @@ for (let y = 0; y < deleteItem.length; y++) {
 // eventlistener pour changer la quantité du produit souhaiter
 for (let y = 0; y < quantity.length; y++) {
   quantity[y].addEventListener('change', () =>{
+    quantityModifier= quantity[y].value-product[y].quantity
+
     product[y].quantity=parseInt(quantity[y].value)
     localStorage.setItem('product',JSON.stringify(product))
+
+    totalPriceItem+=(quantityModifier*product[y].price)
+    totalPrice.innerHTML=`${totalPriceItem}`
+
     quantityShow[y].innerHTML=`Qté : ${quantity[y].value}`
+    quantityModifier=0
   })
   
 }
 
 // fonction de validation des information utilisateur
-function validator (x){
+function connard (x){
   if(x.lenght >1 && /^[a-zA-Z]+$/.test(x)){
     console.log(x)
     return true
   }
 }
 
-// verification de la validité des information entre par l'utilisateur
-for (let y = 0; y < form.length; y++) {
-  form[y].addEventListener('change',()=>{
-    error[y].innerHTML=``
-    if(form[y].value.length <2){
-      error[y].innerHTML=`veuillez renseignez votre ${form[y].name}`
+function tototot (x){
+    if(x.lenght >1){
+        console.log(x)
+        return true
     }
-    contact={firstName:form[0].value,lastName:form[1].value,address:form[2].value,city:form[3].value,email:form[4].value}
-    formTrue=true
-    console.log('tr')
-
-
-
-
-  })
-  
 }
 
+
+
+// verification de la validité des information entre par l'utilisateur
+// for (let y = 0; y < form.length; y++) {
+//   form[y].addEventListener('change',()=>{
+//     error[y].innerHTML=``
+//     // if(form[y].value.length <2){
+//     //   error[y].innerHTML=`veuillez renseignez votre ${form[y].name}`
+//     // }
+//     // if(validator(form[1].value) && validator(form[2].value) && form[3].value>2&&form[4].value>2){
+//     //   contact={firstName:form[0].value,lastName:form[1].value,address:form[2].value,city:form[3].value,email:form[4].value}
+//     //   formTrue=true
+//     //   console.log('tr')
+//     // }else {
+//     //   error[y].innerHTML=`veuillez renseignez votre ${form[y].name}`
+//     //   console.log('fuck')
+//     // }
+    
+
+
+//     // contact={firstName:form[0].value,lastName:form[1].value,address:form[2].value,city:form[3].value,email:form[4].value}
+//     //   formTrue=true
+//     //   console.log('tr')
+//   })
+  
+// }
+
+
+
+
+let trezd = 'tet'
 
 // datas={contact:contact,products:productId}
 
@@ -125,10 +171,9 @@ for (let y = 0; y < form.length; y++) {
 // event listener 
 form[5].addEventListener('click',(e)=>{
   e.preventDefault()
-  datas={contact:contact,products:productId}
 
-  console.log(JSON.stringify(datas))
-  if (formTrue){
+  // verification de la confomité" des donné entré avant envoi
+  if (form[1].value.length>1 && /^[a-zA-Z]+$/.test(form[1].value) && form[2].value.length>1 && /^[a-zA-Z]+$/.test(form[2].value) && form[3].value.length>2 && form[4].value.length>2){
     orderProducts={contact:contact,products:productId}
     fetch("http://localhost:3000/api/products/order",{
       method: "POST",
@@ -139,61 +184,17 @@ form[5].addEventListener('click',(e)=>{
     })
     .then(res=>res.json())
     .then(data=>{
-    console.log(data)
+      orderId=data.orderId
+      localStorage.setItem('orderId',orderId)
     })
+  }else if(!validator(form[1].value)){
+      console.log('err')
   }
-  
+  form[5].formAction=`http://127.0.0.1:5500/front/html/confirmation.html`
 })
 
-// form[5].addEventListener('click',(e)=>{
-//   e.preventDefault()
-// fetch("http://localhost:3000/api/products/order")
-// .then(res=>res.json())
-// .then(data=>{
-// console.log(data)})
-// })
-
-// let prod=['test','tesdt']
-// let cont = 
 
 
-//     datas={products:prod,contact:cont}
-//     fetch("http://localhost:3000/api/products/order",{
-//       method: "POST",
-//       body: JSON.stringify(datas),
-//       Headers:{
-//         "Content-Type": "application/json"
-//       }
-//     })
-//     async function lili (){
-//       await fetch (`http://localhost:3000/api/products/order`)
-//       .then(res=>res.json())
-//       .then(data=>{
-//           console.log(data)
-//         })
-//   }
-
-// let products={productId:14414414}
-// contact={
-//   firstName: 'tre',
-//   lastName: 'tress',
-//   address: 'tre',
-//   city: 'tre',
-//   email: 'tre'
-// }
-// console.log(products)
-// let tur =JSON.stringify(products)
-// console.log(products)
-// console.log(tur)
-// console.log(contact.lastName)
 
 
-// orderProducts={contact:JSON.stringify(contact),products:JSON.stringify(products)}
-// orderProducts= JSON.stringify(orderProducts)
-// console.log(orderProducts)
-
-//     fetch("http://localhost:3000/api/products/order",{
-//       method: "POST",
-//       body:orderProducts,
-//       Headers:{
-//         "Content-Type": "application/json"}})
+confirmation.innerHTML=`${orderId}`

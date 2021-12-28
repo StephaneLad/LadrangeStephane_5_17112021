@@ -17,6 +17,7 @@ async function productItem (){
     await fetch (`http://localhost:3000/api/products/${id}`)
     .then(res=>res.json())
     .then(data=>{
+
         let nbsColors = data.colors.length
         let color = data.colors
         let i =0
@@ -27,6 +28,8 @@ async function productItem (){
         title.textContent = data.name
         price.textContent = data.price
         description.textContent = data.description
+
+        // creation des differente couleur
         while (i< nbsColors){
             colorChoice.innerHTML += `<option value="${color[i]}">${color[i]}</option>`
             i+=1
@@ -34,8 +37,9 @@ async function productItem (){
     })
 ;
 }
+productItem()
 
-// eventlistener sur le bouton dajout permetant de recuper la couleur et la quantité souhaiter 
+// eventlistener sur le bouton dajout permetant de recuper la couleur et la quantité souhaiter
 addCart.addEventListener('click', () =>{   
     let quantity = parseInt(document.getElementById('quantity').value)
     let color = document.getElementById('colors').value
@@ -47,12 +51,13 @@ addCart.addEventListener('click', () =>{
     // probleme if else === fait
     let itemOk = false
 
+    
     if (product === null){
         product = [{id:id,color:color,quantity:quantity,nameItem:names,price:priceItem,img:imgItem}]
     }else{
         console.log(product)
 
-        // 
+        // bouucle de verificationsi le produit est present mais avec une couleur differente
         while(i<product.length){
             if(id===product[i].id){
                 if(color===product[i].color){
@@ -74,13 +79,17 @@ addCart.addEventListener('click', () =>{
             // }
             i+=1
         }
+
+
         if(i===product.length){
+            // si le produit est deja present et/ou avec une couleur different alors ajout dans product
             if(currentProduct & newProduct===false){
                 console.log(currentProduct)
                 product.splice(y,0,{id:id,color:color,quantity:quantity,nameItem:names,price:priceItem,img:imgItem})
                 currentProduct = false
                 console.log(currentProduct)
             }else{
+                // creation du nouveau produit
                 if(!newProduct){
                     console.log('tehe')
                     product= [...product,{id:id,color:color,quantity:quantity,nameItem:names,price:priceItem,img:imgItem}]

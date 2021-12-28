@@ -6,6 +6,8 @@ fetch('http://localhost:3000/api/products')
     .then(data=>{
         const lenght = data.length
         let i = 0
+
+        // boucle pour crée tous les element present dans lapi
         while (i < lenght){
             let element = data[i]
             item.innerHTML += `
