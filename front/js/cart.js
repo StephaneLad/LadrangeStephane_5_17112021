@@ -1,5 +1,16 @@
 let orderProducts
 
+let confirmation = document.querySelector('#orderId')
+
+if(confirmation){
+  let urlId = window.location.search 
+  const urlParams = new URLSearchParams(urlId);
+  const paramsOrderId = urlParams.get('orderId')
+  console.log(paramsOrderId)
+  confirmation.innerText=`${paramsOrderId}`
+}
+
+
 let i=0
 let product =JSON.parse(localStorage.getItem('product'))
 const cartItem = document.getElementById('cart__items') 
@@ -14,7 +25,11 @@ let priceItem
 const totalPrice = document.getElementById('totalPrice')
 
 let form =document.querySelector('.cart__order__form').getElementsByTagName('input')
-let error =document.querySelector('.cart__order__form').getElementsByTagName('p')
+let errorFirstName=document.getElementById('firstNameErrorMsg')
+let errorLastName=document.getElementById('lastNameErrorMsg')
+let errorAdress=document.getElementById('addressErrorMsg')
+let errorCity=document.getElementById('cityErrorMsg')
+let errorEmail=document.getElementById('emailErrorMsg')
 let contact
 let data1
 let data2
@@ -23,32 +38,14 @@ let datas
 
 let productId =[]
 let id
-let orderId = localStorage.getItem('orderId')
-let confirmation = document.querySelector('#orderId')
-
-
-
-
-// let firstName = document.getElementById('firstName')
-// let firstNameError = document.getElementById('firstNameErrorMsg')
-// let lastName = document.getElementById('lastName')
-// let lastNameError = document.getElementById('lastNameErrorMsg')
-// let adress = document.getElementById('address')
-// let adressError = document.getElementById('addressErrorMsg')
-// let city = document.getElementById('city')
-// let cityError = document.getElementById('cityErrorMsg')
-// let email = document.getElementById('email')
-// let emailError = document.getElementById('emailErrorMsg')
-// let submit = document.getElementById('order')
-
-// console.log(cartItem)
+let orderId
 
 //  while permettant dafficher chaque produit stocker dans le HTML
 while(i<product.length){
       cartItem.innerHTML += `
         <article class="cart__item" data-id="${product[i].id}" data-color="${product[i].color}">
         <div class="cart__item__img">
-          <img src="${product[i].img}" alt="Photographie d'un canapé">
+          <img src="${product[i].img}" alt="Photographie du canapé :${product[i].nameItem}">
         </div>
         <div class="cart__item__content">
           <div class="cart__item__content__description">
@@ -76,7 +73,6 @@ while(i<product.length){
   // genération du prix total
   priceItem=product[i].quantity*product[i].price
   totalPriceItem+=priceItem
-  console.log(totalPriceItem)
 
   i +=1
 
@@ -102,11 +98,14 @@ for (let y = 0; y < deleteItem.length; y++) {
 // eventlistener pour changer la quantité du produit souhaiter
 for (let y = 0; y < quantity.length; y++) {
   quantity[y].addEventListener('change', () =>{
+
     quantityModifier= quantity[y].value-product[y].quantity
 
+    // ajout de la quantité modifier dans le local storage
     product[y].quantity=parseInt(quantity[y].value)
     localStorage.setItem('product',JSON.stringify(product))
 
+    // mise a jour du prix selon la modification de quantité
     totalPriceItem+=(quantityModifier*product[y].price)
     totalPrice.innerHTML=`${totalPriceItem}`
 
@@ -117,64 +116,28 @@ for (let y = 0; y < quantity.length; y++) {
 }
 
 // fonction de validation des information utilisateur
-function connard (x){
-  if(x.lenght >1 && /^[a-zA-Z]+$/.test(x)){
-    console.log(x)
+function checkerNumber (x){
+  if(x.length >1 && /^[a-zA-Z]+$/.test(x)){
     return true
   }
 }
 
-function tototot (x){
-    if(x.lenght >1){
-        console.log(x)
-        return true
-    }
+function checkerLength (x){
+  if(x.length >1){
+    return true
+  }
 }
-
-
-
-// verification de la validité des information entre par l'utilisateur
-// for (let y = 0; y < form.length; y++) {
-//   form[y].addEventListener('change',()=>{
-//     error[y].innerHTML=``
-//     // if(form[y].value.length <2){
-//     //   error[y].innerHTML=`veuillez renseignez votre ${form[y].name}`
-//     // }
-//     // if(validator(form[1].value) && validator(form[2].value) && form[3].value>2&&form[4].value>2){
-//     //   contact={firstName:form[0].value,lastName:form[1].value,address:form[2].value,city:form[3].value,email:form[4].value}
-//     //   formTrue=true
-//     //   console.log('tr')
-//     // }else {
-//     //   error[y].innerHTML=`veuillez renseignez votre ${form[y].name}`
-//     //   console.log('fuck')
-//     // }
-    
-
-
-//     // contact={firstName:form[0].value,lastName:form[1].value,address:form[2].value,city:form[3].value,email:form[4].value}
-//     //   formTrue=true
-//     //   console.log('tr')
-//   })
-  
-// }
-
-
-
-
-let trezd = 'tet'
-
-// datas={contact:contact,products:productId}
-
-
-// console.log(JSON.stringify(datas))
 
 // event listener 
 form[5].addEventListener('click',(e)=>{
   e.preventDefault()
-
-  // verification de la confomité" des donné entré avant envoi
-  if (form[1].value.length>1 && /^[a-zA-Z]+$/.test(form[1].value) && form[2].value.length>1 && /^[a-zA-Z]+$/.test(form[2].value) && form[3].value.length>2 && form[4].value.length>2){
+  // verification de la conformité des donné entré avant envoi
+  if (checkerNumber(form[0].value) && checkerNumber(form[1].value) && checkerLength(form[2].value) && checkerLength(form[3].value) && checkerLength(form[4].value)){
+    
+    contact={firstName:form[0].value,lastName:form[1].value,address:form[2].value,city:form[3].value,email:form[4].value}
     orderProducts={contact:contact,products:productId}
+
+    // envoi donné vers  api
     fetch("http://localhost:3000/api/products/order",{
       method: "POST",
       body: JSON.stringify(orderProducts),
@@ -185,16 +148,18 @@ form[5].addEventListener('click',(e)=>{
     .then(res=>res.json())
     .then(data=>{
       orderId=data.orderId
-      localStorage.setItem('orderId',orderId)
+      window.location=`http://127.0.0.1:5500/front/html/confirmation.html?orderId=${orderId}`
     })
-  }else if(!validator(form[1].value)){
-      console.log('err')
+
+  }else if(!checkerNumber(form[0].value)){
+    errorFirstName.textContent='veuillez renseigner un prénom valide'
+  }else if(!checkerNumber(form[1].value)){
+    errorLastName.textContent='veuillez renseigner un nom valide'
+  }else if (!checkerLength(form[2].value)){
+    errorAdress.textContent='veuillez renseigner une adresse valide'
+  }else if (!checkerLength(form[3].value)){
+    errorCity.textContent='veuillez renseigner une ville valide'
+  }else if (!checkerLength(form[4].value)){
+    errorEmail.textContent='veuillez renseigner un email valide'
   }
-  form[5].formAction=`http://127.0.0.1:5500/front/html/confirmation.html`
 })
-
-
-
-
-
-confirmation.innerHTML=`${orderId}`

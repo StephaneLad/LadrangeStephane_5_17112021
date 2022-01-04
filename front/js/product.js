@@ -30,9 +30,12 @@ async function productItem (){
         description.textContent = data.description
 
         // creation des differente couleur
-        while (i< nbsColors){
-            colorChoice.innerHTML += `<option value="${color[i]}">${color[i]}</option>`
-            i+=1
+        // while (i< nbsColors){
+        //     colorChoice.innerHTML += `<option value="${color[i]}">${color[i]}</option>`
+        //     i+=1
+        // }
+        for(let color of data.colors){
+            colorChoice.innerHTML+=`<option value="${color}">${color}</option>`
         }
     })
 ;
@@ -46,8 +49,8 @@ addCart.addEventListener('click', () =>{
     let product =JSON.parse(localStorage.getItem('product'))
     let i =0
     let y =0
-    let newProduct = false
     let currentProduct = false
+    let newProduct = false
     // probleme if else === fait
     let itemOk = false
 
@@ -57,53 +60,51 @@ addCart.addEventListener('click', () =>{
     }else{
         console.log(product)
 
+        let products = findProducts(id)
+        console.log(products)
         // bouucle de verificationsi le produit est present mais avec une couleur differente
         while(i<product.length){
+            // verification que l'ID est egal au produit
             if(id===product[i].id){
+                // si la couleur est egal a la couleur de produit stocker on ajoute la nouvelle quantité shouaiter a celle stocker
                 if(color===product[i].color){
                     product[i].quantity += quantity
-                    newProduct = true
+                    currentProduct = true
                     itemOk= true
-                    console.log('if')
                 }else{
                     if(!itemOk){
-                        console.log('else')
-                        currentProduct = true
+                        newProduct = true
                         y = i
                     }
                 }
             }
-            // if(id===product[i].id & color===product[i].color){
-            //   product[i].quantity += quantity
-            //   newProduct = true
-            // }
             i+=1
         }
 
 
+        function findProducts (x){
+           // product.filterParID()
+           return product.filter(product => product.id === x)
+           
+        }
+       
+
+
         if(i===product.length){
             // si le produit est deja present et/ou avec une couleur different alors ajout dans product
-            if(currentProduct & newProduct===false){
-                console.log(currentProduct)
+            if(newProduct & currentProduct===false){
+                console.log(newProduct)
                 product.splice(y,0,{id:id,color:color,quantity:quantity,nameItem:names,price:priceItem,img:imgItem})
-                currentProduct = false
-                console.log(currentProduct)
+                newProduct = false
+                console.log(newProduct)
             }else{
                 // creation du nouveau produit
-                if(!newProduct){
-                    console.log('tehe')
+                if(!currentProduct){
                     product= [...product,{id:id,color:color,quantity:quantity,nameItem:names,price:priceItem,img:imgItem}]
                 }
             }
-            // product= [...product,{id:id,color:color,quantity:quantity,nameItem:names,price:priceItem,img:imgItem}]
-            // console.log('test')
         }
     }
     product = JSON.stringify(product)
     localStorage.setItem('product',product)
-    // console.log(product)
-
-
-
-
 })
