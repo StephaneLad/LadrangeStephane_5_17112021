@@ -77,13 +77,17 @@ while(i<product.length){
   i +=1
 
   // recuperation des diver element html
-  deleteItem = document.querySelectorAll('.cart__item__content__settings__delete')
-  quantity = document.querySelectorAll('.itemQuantity')
-  quantityShow = document.querySelectorAll('.cart__item__content__settings__quantity_show')
+  // deleteItem = document.querySelectorAll('.cart__item__content__settings__delete')
+  // quantity = document.querySelectorAll('.itemQuantity')
+  // quantityShow = document.querySelectorAll('.cart__item__content__settings__quantity_show')
 }
 test.addEventListener('click',()=>{console.log('test')})
 totalPrice.innerHTML=`${totalPriceItem}`
 
+
+quantity = document.querySelectorAll('.itemQuantity')
+quantityShow = document.querySelectorAll('.cart__item__content__settings__quantity_show')
+deleteItem = document.querySelectorAll('.cart__item__content__settings__delete')
 
 
 // eventlistener pour suprimer le produit souhaiter

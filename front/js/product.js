@@ -46,65 +46,48 @@ productItem()
 addCart.addEventListener('click', () =>{   
     let quantity = parseInt(document.getElementById('quantity').value)
     let color = document.getElementById('colors').value
-    let product =JSON.parse(localStorage.getItem('product'))
+    let products =JSON.parse(localStorage.getItem('product'))
+    let filteredProducts =[]
+    let otherProducts  =[]
     let i =0
     let y =0
     let currentProduct = false
-    let newProduct = false
     // probleme if else === fait
     let itemOk = false
 
     
-    if (product === null){
-        product = [{id:id,color:color,quantity:quantity,nameItem:names,price:priceItem,img:imgItem}]
+    if (products === null){
+        filteredProducts = [{id:id,color:color,quantity:quantity,nameItem:names,price:priceItem,img:imgItem}]
     }else{
-        console.log(product)
+        filteredProducts=products.filter(product => product.id === id)
+        otherProducts=products.filter(product => product.id !== id)
+        // console.log(filteredProducts)
+        if(filteredProducts.length === 0){
+            filteredProducts = [{id:id,color:color,quantity:quantity,nameItem:names,price:priceItem,img:imgItem}]
+        }else{
 
-        let products = findProducts(id)
-        console.log(products)
-        // bouucle de verificationsi le produit est present mais avec une couleur differente
-        while(i<product.length){
-            // verification que l'ID est egal au produit
-            if(id===product[i].id){
-                // si la couleur est egal a la couleur de produit stocker on ajoute la nouvelle quantité shouaiter a celle stocker
-                if(color===product[i].color){
-                    product[i].quantity += quantity
-                    currentProduct = true
-                    itemOk= true
-                }else{
-                    if(!itemOk){
-                        newProduct = true
-                        y = i
+            let productModifier =[]
+            while(i<filteredProducts.length){
+                // verification que l'ID est egal au produit
+                    // si la couleur est egal a la couleur de produit stocker on ajoute la nouvelle quantité shouaiter a celle stocker
+                    if(color===filteredProducts[i].color){
+                        filteredProducts[i].quantity += quantity
+                        currentProduct = true
+                        itemOk= true
+                    }else{
+                        if(itemOk === false ){
+                            productModifier= {id:id,color:color,quantity:quantity,nameItem:names,price:priceItem,img:imgItem}
+                        }
                     }
-                }
-            }
-            i+=1
-        }
-
-
-        function findProducts (x){
-           // product.filterParID()
-           return product.filter(product => product.id === x)
-           
-        }
-       
-
-
-        if(i===product.length){
-            // si le produit est deja present et/ou avec une couleur different alors ajout dans product
-            if(newProduct & currentProduct===false){
-                console.log(newProduct)
-                product.splice(y,0,{id:id,color:color,quantity:quantity,nameItem:names,price:priceItem,img:imgItem})
-                newProduct = false
-                console.log(newProduct)
-            }else{
-                // creation du nouveau produit
-                if(!currentProduct){
-                    product= [...product,{id:id,color:color,quantity:quantity,nameItem:names,price:priceItem,img:imgItem}]
+                i+=1
+                if(i===filteredProducts.length && currentProduct===false){
+                    filteredProducts=[...filteredProducts,productModifier]
                 }
             }
         }
+        console.log(filteredProducts)        
     }
-    product = JSON.stringify(product)
-    localStorage.setItem('product',product)
+
+    products = JSON.stringify([...filteredProducts,...otherProducts])
+    localStorage.setItem('product',products)
 })
