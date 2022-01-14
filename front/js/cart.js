@@ -22,6 +22,9 @@ let quantityShow
 let quantityModifier
 let totalPriceItem = 0
 let priceItem
+
+let itemValue
+
 const totalPrice = document.getElementById('totalPrice')
 
 let form =document.querySelector('.cart__order__form').getElementsByTagName('input')
@@ -40,23 +43,46 @@ let productId =[]
 let id
 let orderId
 
+let toto
+
+async function getPrice (product){
+  return await fetch (`http://localhost:3000/api/products/${product.id}`)
+  .then(res=>res.json())
+  .then(data=>{
+    // itemValue = data.price
+    return {...data,quantity:product.quantity,color:product.color}
+  })
+}
+// console.log(itemValue)
+// console.log(itemValue)
+
+
+
 //  while permettant dafficher chaque produit stocker dans le HTML
-while(i<product.length){
+async function tot (){
+    while(i<product.length){
+      // console.log(itemValue)
+      await getPrice(product[i]).then(data=>{
+      // console.log(product)
+      console.log(data)
+      // console.log(itemValue)
+
+
       cartItem.innerHTML += `
-        <article class="cart__item" data-id="${product[i].id}" data-color="${product[i].color}">
+        <article class="cart__item" data-id="${data._id}" data-color="${data.color}">
         <div class="cart__item__img">
-          <img src="${product[i].img}" alt="Photographie du canapé :${product[i].nameItem}">
+          <img src="${data.imageUrl}" alt="Photographie du canapé :${data.name}">
         </div>
         <div class="cart__item__content">
           <div class="cart__item__content__description">
-            <h2>${product[i].nameItem}</h2>
-            <p>${product[i].color}</p>
-            <p>${product[i].price}</p>
+            <h2>${data.name}</h2>
+            <p>${data.color}</p>
+            <p>${data.price}</p>
           </div>
           <div class="cart__item__content__settings">
             <div class="cart__item__content__settings__quantity">
-              <p class="cart__item__content__settings__quantity_show">Qté : ${product[i].quantity}</p>
-              <input type="number" class="itemQuantity" name="itemQuantity" min="1" max="100" value="${product[i].quantity}">
+              <p class="cart__item__content__settings__quantity_show">Qté : ${data.quantity}</p>
+              <input type="number" class="itemQuantity" name="itemQuantity" min="1" max="100" value="${data.quantity}">
             </div>
             <div class="cart__item__content__settings__delete">
               <p class="deleteItem">Supprimer</p>
@@ -66,13 +92,24 @@ while(i<product.length){
       </article>
         `
 
-  // recuperation de l'id produit
-  id=product[i].id
-  productId=[...productId,id]
 
-  // genération du prix total
-  priceItem=product[i].quantity*product[i].price
-  totalPriceItem+=priceItem
+      // recuperation de l'id produit
+      id=data._id
+      productId=[...productId,id]
+
+      // genération du prix total
+      priceItem=data.quantity*data.price
+      totalPriceItem+=priceItem
+
+
+      })
+  // // recuperation de l'id produit
+  // id=product[i].id
+  // productId=[...productId,id]
+
+  // // genération du prix total
+  // priceItem=product[i].quantity*product[i].price
+  // totalPriceItem+=priceItem
 
   i +=1
 
@@ -80,15 +117,12 @@ while(i<product.length){
   // deleteItem = document.querySelectorAll('.cart__item__content__settings__delete')
   // quantity = document.querySelectorAll('.itemQuantity')
   // quantityShow = document.querySelectorAll('.cart__item__content__settings__quantity_show')
-}
-test.addEventListener('click',()=>{console.log('test')})
-totalPrice.innerHTML=`${totalPriceItem}`
-
-
-quantity = document.querySelectorAll('.itemQuantity')
-quantityShow = document.querySelectorAll('.cart__item__content__settings__quantity_show')
-deleteItem = document.querySelectorAll('.cart__item__content__settings__delete')
-
+}}
+tot().then(_=>{
+  totalPrice.innerHTML=`${totalPriceItem}`
+  quantity = document.querySelectorAll('.itemQuantity')
+  quantityShow = document.querySelectorAll('.cart__item__content__settings__quantity_show')
+  deleteItem = document.querySelectorAll('.cart__item__content__settings__delete')
 
 // eventlistener pour suprimer le produit souhaiter
 for (let y = 0; y < deleteItem.length; y++) {
@@ -107,17 +141,74 @@ for (let y = 0; y < quantity.length; y++) {
 
     // ajout de la quantité modifier dans le local storage
     product[y].quantity=parseInt(quantity[y].value)
+    console.log(localStorage.getItem('product'))
     localStorage.setItem('product',JSON.stringify(product))
+    console.log(localStorage.getItem('product'))
+    tot().then(_=>{
+      totalPrice.innerHTML=`${totalPriceItem}`
+      // mise a jour du prix selon la modification de quantité
+      totalPriceItem+=(quantityModifier*product[y].price)
+      totalPrice.innerHTML=`${totalPriceItem}`
 
-    // mise a jour du prix selon la modification de quantité
-    totalPriceItem+=(quantityModifier*product[y].price)
-    totalPrice.innerHTML=`${totalPriceItem}`
+      // affichage de la quantité sur la page
+      quantityShow[y].innerHTML=`Qté : ${quantity[y].value}`
+      quantityModifier=0
+    })
+    // // mise a jour du prix selon la modification de quantité
+    // totalPriceItem+=(quantityModifier*product[y].price)
+    // totalPrice.innerHTML=`${totalPriceItem}`
 
-    quantityShow[y].innerHTML=`Qté : ${quantity[y].value}`
-    quantityModifier=0
+    // // affichage de la quantité sur la page
+    // quantityShow[y].innerHTML=`Qté : ${quantity[y].value}`
+    // quantityModifier=0
   })
   
 }
+
+
+})
+test.addEventListener('click',()=>{console.log('test')})
+totalPrice.innerHTML=`${totalPriceItem}`
+
+// recuperation des diver element html
+// quantity = document.querySelectorAll('.itemQuantity')
+// quantityShow = document.querySelectorAll('.cart__item__content__settings__quantity_show')
+// deleteItem = document.querySelectorAll('.cart__item__content__settings__delete')
+
+
+// eventlistener pour suprimer le produit souhaiter
+// for (let y = 0; y < deleteItem.length; y++) {
+//   deleteItem[y].addEventListener("click", () => {
+//     product.splice(y,1)
+//     localStorage.setItem('product',JSON.stringify(product))
+//     window.location.reload()
+//   }); 
+// }
+
+// // eventlistener pour changer la quantité du produit souhaiter
+// for (let y = 0; y < quantity.length; y++) {
+//   quantity[y].addEventListener('change', () =>{
+
+//     quantityModifier= quantity[y].value-product[y].quantity
+
+//     // ajout de la quantité modifier dans le local storage
+//     product[y].quantity=parseInt(quantity[y].value)
+//     console.log(localStorage.getItem('product'))
+//     localStorage.setItem('product',JSON.stringify(product))
+//     console.log(localStorage.getItem('product'))
+//     tot().then(_=>{
+//       totalPrice.innerHTML=`${totalPriceItem}`
+//     })
+//     // // mise a jour du prix selon la modification de quantité
+//     // totalPriceItem+=(quantityModifier*product[y].price)
+//     // totalPrice.innerHTML=`${totalPriceItem}`
+
+//     // // affichage de la quantité sur la page
+//     // quantityShow[y].innerHTML=`Qté : ${quantity[y].value}`
+//     // quantityModifier=0
+//   })
+  
+// }
 
 // fonction de validation des information utilisateur
 function checkerNumber (x){
@@ -138,6 +229,7 @@ form[5].addEventListener('click',(e)=>{
   // verification de la conformité des donné entré avant envoi
   if (checkerNumber(form[0].value) && checkerNumber(form[1].value) && checkerLength(form[2].value) && checkerLength(form[3].value) && checkerLength(form[4].value)){
     
+    // recuperation des information entré dans le formulaire
     contact={firstName:form[0].value,lastName:form[1].value,address:form[2].value,city:form[3].value,email:form[4].value}
     orderProducts={contact:contact,products:productId}
 

@@ -55,20 +55,25 @@ addCart.addEventListener('click', () =>{
     // probleme if else === fait
     let itemOk = false
 
-    
+    // verrification de product si null alors set filteredProducts
     if (products === null){
-        filteredProducts = [{id:id,color:color,quantity:quantity,nameItem:names,price:priceItem,img:imgItem}]
+        filteredProducts = [{id:id,color:color,quantity:quantity,price:0}]
     }else{
+
         filteredProducts=products.filter(product => product.id === id)
         otherProducts=products.filter(product => product.id !== id)
-        // console.log(filteredProducts)
+        
+
+        // si le produit nn'est pas encore present alors set filteredProducts
         if(filteredProducts.length === 0){
-            filteredProducts = [{id:id,color:color,quantity:quantity,nameItem:names,price:priceItem,img:imgItem}]
+            filteredProducts = [{id:id,color:color,quantity:quantity,price:0}]
         }else{
 
             let productModifier =[]
+
+            // verification pour chaque produit de filteredProducts
             while(i<filteredProducts.length){
-                // verification que l'ID est egal au produit
+                
                     // si la couleur est egal a la couleur de produit stocker on ajoute la nouvelle quantité shouaiter a celle stocker
                     if(color===filteredProducts[i].color){
                         filteredProducts[i].quantity += quantity
@@ -76,7 +81,7 @@ addCart.addEventListener('click', () =>{
                         itemOk= true
                     }else{
                         if(itemOk === false ){
-                            productModifier= {id:id,color:color,quantity:quantity,nameItem:names,price:priceItem,img:imgItem}
+                            productModifier= {id:id,color:color,quantity:quantity,,price:0}
                         }
                     }
                 i+=1
