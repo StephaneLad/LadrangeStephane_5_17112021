@@ -1,13 +1,13 @@
 const item = document.getElementById("items")
 
-// fetch de l'api products pour recuper chaque produit et intégrer leur donné dans le HTML
+// fetch de l'api products pour récupérer chaque produit et intégrer leur données dans le HTML
 fetch('http://localhost:3000/api/products')
     .then(res=>res.json())
     .then(data=>{
         const lenght = data.length
         let i = 0
 
-        // boucle pour crée tous les element present dans lapi
+        // boucle pour crée tous les élements présent dans l'API
         while (i < lenght){
             let element = data[i]
             item.innerHTML += `
